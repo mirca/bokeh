@@ -109,6 +109,7 @@ export class GMapPlotCanvasView extends PlotCanvasView
       # Create the map with above options in div
       @map = new maps.Map(@canvas_view.map_div[0], map_options)
       maps.event.addListenerOnce(@map, 'idle', @setRanges)
+      @listenTo(@model.plot, 'change:map_options', () => @_update_options())
 
     if not window._bokeh_gmap_loads?
       window._bokeh_gmap_loads = []
@@ -126,6 +127,9 @@ export class GMapPlotCanvasView extends PlotCanvasView
       script.type = 'text/javascript'
       script.src = "https://maps.googleapis.com/maps/api/js?key=#{@model.plot.api_key}&callback=_bokeh_gmap_callback"
       document.body.appendChild(script)
+
+  _update_options: () ->
+    @map.setOptions({styles: JSON.parse(@model.plot.map_options.styles) })
 
   _map_hook: (ctx, frame_box) ->
     [left, top, width, height] = frame_box
